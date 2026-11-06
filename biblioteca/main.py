@@ -22,6 +22,7 @@ from biblioteca.servico import ServicoEmprestimos, ServicoLeitores, ServicoRelat
 # ---------------- composição: o único lugar que conhece as classes concretas ----------------
 repo = RepositorioMemoria()
 caixa = CaixaDeSaida()
+
 NOTIFICADORES = [NotificadorEmail(caixa)]
 
 leitores = ServicoLeitores(repo, POLITICAS)
