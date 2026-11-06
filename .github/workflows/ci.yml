@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: 3.11
+          python-version: "3.11"
       - run: pip install -r requirements-dev.txt
       - run: pytest -v
 
@@ -29,5 +29,9 @@ jobs:
       - name: Sobe um container e chama /saude
         run: |
           docker run -d --name biblioteca-ci -p 8000:8000 biblioteca-ci:latest
-          sleep 10
-          curl -f http://localhost:8000/saude
+          for _ in $(seq 1 30); do
+            if curl -fsS http://localhost:8000/saude; then exit 0; fi
+            sleep 1
+          done
+          docker logs biblioteca-ci
+          exit 1
