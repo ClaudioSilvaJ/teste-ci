@@ -63,3 +63,18 @@ jobs:
         - env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           run: gh release create "${{ github.ref_name }}" --generate-notes --title "${{ github.ref_name }}"
+          
+  deploy-railway:
+      needs: [imagem]
+      if: startsWith(github.ref, 'refs/tags/v')
+      runs-on: ubuntu-latest
+      environment:
+        name: producao
+      steps:
+        - uses: actions/checkout@v7
+        - name: Instala o Railway CLI
+          run: npm install -g @railway/cli
+        - name: Envia o código; o Railway constrói o Dockerfile e publica
+          env:
+            RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          run: railway up --service "${{ vars.RAILWAY_SERVICE_ID }}" --ci
