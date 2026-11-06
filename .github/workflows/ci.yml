@@ -34,3 +34,18 @@ jobs:
           done
           docker logs biblioteca-ci
           exit 1
+  publicar-imagem:
+      needs: imagem
+      if: github.event_name == 'push'      # nunca em pull request
+      runs-on: ubuntu-latest
+      permissions:
+        contents: read
+        packages: write                    # permissão para escrever no registro
+      steps:
+        - uses: actions/checkout@v7
+        - name: Nome da imagem (o registro exige minúsculas)
+          run: echo "IMAGEM=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+        - run: docker build -t "$IMAGEM:latest" -t "$IMAGEM:${GITHUB_SHA::7}" .
+        - name: Login no registro
+          run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+        - run: docker push --all-tags "$IMAGEM"
