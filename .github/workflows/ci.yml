@@ -18,3 +18,16 @@ jobs:
           python-version: 3.11
       - run: pip install -r requirements-dev.txt
       - run: pytest -v
+
+  imagem:
+    needs: [testes]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+      - run: docker build -t biblioteca-ci:latest .
+      - name: Sobe um container e chama /saude
+        run: |
+          docker run -d --name biblioteca-ci -p 8000:8000 biblioteca-ci:latest
+          sleep 10
+          curl -f http://localhost:8000/saude
