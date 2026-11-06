@@ -2,7 +2,7 @@
 
 from datetime import date, timedelta
 
-MULTA_POR_DIA = 2.00
+MULTA_POR_DIA = 3.00
 MULTA_MAXIMA = 50.00
 
 
